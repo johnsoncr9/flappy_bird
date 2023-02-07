@@ -1,0 +1,152 @@
+Flappy bird
+
+RULES:
+- User controls bird on left side of screen. 
+- When the mouse is clicked, the bird flys up a specific amount of pixels.
+- When the mouse is not being clicked, the bird will continuely fall.
+- The goal is to fly between two columns that are randomly generated on the right side of the screen at a set interval.
+- You get a point for flying through each set of columns. 
+
+Left to do
+- Randomize the heights of the obstacles
+  - ideas use Math.floor(Math.random() * (max-min) + max)
+  - Could randomize all heights between a point
+    - Too hard to control - predict and randomizes on every draw instance
+  - Could assigne a set number of heights to vales switch/if statement
+    - Create an array of heights 
+
+  - Need to figure out the GAP problem
+    - done: let bottomObstacleTwoOneHeight = mapHeight - topObstacleTwoOneHeight - gap;
+
+
+- Add multiple obstacles
+
+- Get the gameplay right
+  - bird movement 
+  - pipe speed
+  - gap location
+  - size of board
+
+
+
+// Top Obstacle Two
+const topObstacleTwo = document.createElement("div");
+let gap = 150;
+let topObstacleTwoHeight = 400;
+const topObstacleTwoWidth = 100;
+let topObstacleTwoPosition = [900, 600];
+
+// Obstacle height randomizer
+const obstacleTopTwoHeightRandomizer = () => {
+  return Math.floor(Math.random() * (650 - 250) + 250);
+};
+
+topObstacleTwoHeight = obstacleTopTwoHeightRandomizer();
+
+// Draw Top Obstacle
+const drawTopObstacleTwo = () => {
+  topObstacleTwo.style.left = topObstacleTwoPosition[0] + "px";
+  topObstacleTwo.style.bottom = topObstacleTwoHeight + "px";
+  topObstacleTwo.style.height = topObstacleTwoHeight + "px";
+};
+
+// Create Top Obstacle
+const createTopObstacleTwo = () => {
+  topObstacleTwo.classList.add("topObstacleTwo");
+  map.appendChild(topObstacleTwo);
+  topObstacleTwoHeight = obstacleTopTwoHeightRandomizer();
+  console.log(topObstacleTwoHeight);
+  drawTopObstacleTwo();
+};
+
+createTopObstacleTwo();
+
+// Bottom Obstacle Two
+const bottomObstacleTwo = document.createElement("div");
+let bottomObstacleTwoHeight = mapHeight - topObstacleTwoHeight - gap;
+const bottomObstacleTwoWidth = 100;
+let bottomObstacleTwoPosition = [900, 0];
+
+// const obstacleBottomTwoHeightRandomizer = () => {
+//   return Math.floor(Math.random() * (500 - 300) + 300);
+// };
+
+// bottomObstacleTwoHeight = obstacleBottomHeightRandomizer();
+
+// Draw Bottom Obstacle
+const drawBottomObstacleTwo = () => {
+  bottomObstacleTwo.style.left = bottomObstacleTwoPosition[0] + "px";
+  bottomObstacleTwo.style.bottom = bottomObstacleTwoPosition[1] + "px";
+  bottomObstacleTwo.style.height = bottomObstacleTwoHeight + "px";
+};
+
+// Create Bottom Obstacle
+const createBottomObstacleTwo = () => {
+  bottomObstacleTwo.classList.add("bottomObstacleTwo");
+  map.appendChild(bottomObstacleTwo);
+  // bottomObstacleTwoHeight = obstacleBottomHeightRandomizer();
+  bottomObstacleTwoHeight = mapHeight - topObstacleTwoHeight - gap;
+  console.log(bottomObstacleTwoHeight);
+  drawBottomObstacleTwo();
+};
+
+createBottomObstacleTwo();
+
+// Delete Obstacles
+const deleteObstacles = () => {
+  map.removeChild(topObstacleTwo);
+  map.removeChild(bottomObstacleTwo);
+};
+
+// Move Obstacles left
+const moveObstaclesLeft = () => {
+  topObstacleTwoPosition[0] -= 3;
+  bottomObstacleTwoPosition[0] -= 3;
+  drawTopObstacleTwo();
+  drawBottomObstacleTwo();
+  obstacleEndCheck();
+};
+
+//Remove Obstacles from the board
+const obstacleEndCheck = () => {
+  checkForObstacleCollisions();
+  if (topObstacleTwoPosition[0] < -200) {
+    deleteObstacles();
+    //clearInterval(moveObstaclesLeftTimer);
+    topObstacleTwoPosition = [900, 600];
+    bottomObstacleTwoPosition = [900, 0];
+    createTopObstacleTwo();
+    createBottomObstacleTwo();
+    currentScore += 1;
+    console.log(currentScore);
+    score.innerHTML = currentScore;
+  }
+};
+
+// add 
+const addObstacles = () =>{
+  
+}
+
+// Obstacle Collision Detections
+const checkForObstacleCollisions = () => {
+  if (
+    (birdCurrentPosition[0] + birdWidth >= topObstacleTwoPosition[0] && // Bottom left
+      birdCurrentPosition[0] <= topObstacleTwoPosition[0] + topObstacleTwoWidth && // Bottom Right
+      birdCurrentPosition[1] + birdHeight > mapHeight - topObstacleTwoHeight) || // Top Left
+    (birdCurrentPosition[0] + birdWidth >= bottomObstacleTwoPosition[0] && // Top left
+      birdCurrentPosition[0] <=
+        bottomObstacleTwoPosition[0] + bottomObstacleTwoWidth && // Top Right
+      birdCurrentPosition[1] <=
+        bottomObstacleTwoPosition[1] + bottomObstacleTwoHeight)
+  ) {
+    console.log("HIT!");
+    sendBirdHome();
+    deleteObstacles();
+    //clearInterval(moveObstaclesLeftTimer);
+    topObstacleTwoPosition = [900, 600];
+    bottomObstacleTwoPosition = [900, 0];
+    createTopObstacleTwo();
+    createBottomObstacleTwo();
+  }
+};
